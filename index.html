@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>R6 Squad</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Inter:wght@400;500&display=swap">
+<style>
+:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#10151b;--sf:#18202a;--ln:#263140;--tx:#e8edf2;--mu:#8a97a6;--am:#ffb020;--g:#3ddc84;--b:#6aa8ff;--m:#6b7785}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font:400 15px/1.4 Inter,system-ui,sans-serif;min-height:100vh}
+h1,h2,.hd{font-family:"Barlow Semi Condensed",system-ui,sans-serif;font-weight:700}
+main{max-width:480px;margin:0 auto;padding:16px 16px 40px}
+.hidden{display:none!important}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+h1{font-size:28px;margin:0}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--am);outline-offset:2px}
+.av{width:44px;height:44px;border-radius:50%;background:var(--ln);display:grid;place-items:center;font-weight:600;overflow:hidden;flex:none}
+.av img{width:100%;height:100%;object-fit:cover}
+.call{width:100%;padding:20px;border-radius:14px;background:var(--am);color:#1a1200;font-size:24px;font-family:"Barlow Semi Condensed",sans-serif;font-weight:700}
+.call:active{transform:scale(.98)}.call:disabled{opacity:.5}
+.sub{color:var(--mu);font-size:13px;margin:8px 2px 22px;text-align:center}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+.seg button{padding:12px 6px;border-radius:10px;background:var(--sf);border:1px solid var(--ln);font-size:13.5px;font-weight:500;line-height:1.2}
+.seg button[aria-pressed=true]{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c);color:var(--c)}
+h2{font-size:18px;margin:0 0 10px;color:var(--mu)}
+.row{display:flex;align-items:center;gap:12px;padding:12px;background:var(--sf);border-radius:12px;margin-bottom:8px}
+.row.me{border:1px solid var(--ln)}
+.n{font-weight:600;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.s{font-size:13px;display:flex;align-items:center;gap:6px;color:var(--mu)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.grow{flex:1;min-width:0}
+.nr{display:flex;align-items:center;gap:8px;min-width:0}
+.rk{flex:none;font-size:11.5px;font-weight:600;color:var(--rc);border:1px solid var(--rc);border-radius:6px;padding:1px 7px}
+.lk{flex:none;font-size:13px;font-weight:600;color:var(--am);text-decoration:none;padding:8px 10px;border:1px solid var(--ln);border-radius:8px}
+.empty{color:var(--mu);text-align:center;padding:24px 0}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:20px}
+label{display:block;font-size:13px;color:var(--mu);margin:14px 0 6px}
+input[type=text],select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--ln);background:var(--bg);color:var(--tx);font:inherit;font-size:16px}
+.btn{padding:12px 16px;border-radius:10px;background:var(--ln);font-weight:500}
+.btn.pri{background:var(--am);color:#1a1200;font-weight:600}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.pick{display:flex;align-items:center;gap:14px}.pick .av{width:72px;height:72px;font-size:26px}
+.fl{position:relative;overflow:hidden;display:inline-block;cursor:pointer;margin:0;font-size:15px;color:var(--tx)}
+.fl input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+.toast{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);max-width:456px;margin:0 auto;background:var(--am);color:#1a1200;border-radius:12px;padding:14px 16px;font-weight:600;z-index:20;display:flex;gap:10px}
+.note{color:var(--mu);font-size:12.5px;margin-top:6px}
+@media (hover:hover){.call:hover{filter:brightness(1.08)}.btn:hover,.lk:hover{filter:brightness(1.2)}}
+@media (min-width:900px){
+main{max-width:1000px;padding:32px 32px 56px}
+#app{display:grid;grid-template-columns:340px 1fr;column-gap:40px;align-content:start}
+#app header{grid-column:1/-1}
+#app .call{grid-column:1;grid-row:2}#app .sub{grid-column:1;grid-row:3}
+#app .seg{grid-column:1;grid-row:4;grid-template-columns:1fr;align-self:start}
+#app h2{grid-column:2;grid-row:2;align-self:start}
+#app #list{grid-column:2;grid-row:3/span 3;align-self:start;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));column-gap:10px}
+#setup{max-width:520px;margin:0 auto}}
+</style>
+</head>
+<body>
+<div id="toast" class="toast hidden" role="alert"></div>
+<div id="incoming" class="toast hidden" role="alertdialog" style="flex-direction:column"><div id="incMsg" style="font-size:18px"></div><div class="acts" style="margin-top:10px"><button class="btn" id="accept" type="button" style="flex:1;background:#1a1200;color:var(--am)">Aceitar</button><button class="btn" id="decline" type="button" style="flex:1;background:rgba(26,18,0,.15);color:#1a1200">Recusar</button></div></div>
+<main>
+<section id="gate" class="hidden card"><h2 class="hd" style="color:var(--tx)">Falta configurar</h2><p class="note" style="font-size:14px">Cole os dados do Firebase no arquivo firebase-config.js.</p></section>
+<section id="setup" class="hidden">
+  <h1 id="setupTitle">Seu perfil</h1>
+  <div class="card" style="margin-top:16px">
+    <div class="pick"><div class="av" id="prevAv"></div><label class="btn fl">Escolher foto ou GIF<input type="file" id="file" accept="image/*"></label></div>
+    <label for="nick">Nick do jogo</label>
+    <input type="text" id="nick" maxlength="16" autocomplete="off" placeholder="Ex.: Thatcher_BR">
+    <label for="trk">Link do seu perfil no R6 Tracker (opcional)</label>
+    <input type="text" id="trk" maxlength="200" autocomplete="off" inputmode="url" placeholder="https://r6.tracker.network/...">
+    <label for="rk">Seu rank</label>
+    <select id="rk"><option value="">Sem rank</option><option value="cobre">Cobre</option><option value="bronze">Bronze</option><option value="prata">Prata</option><option value="ouro">Ouro</option><option value="platina">Platina</option><option value="esmeralda">Esmeralda</option><option value="diamante">Diamante</option><option value="campeao">Campeão</option></select>
+    <div class="acts"><button class="btn pri" id="save" type="button">Salvar</button><button class="btn hidden" id="cancel" type="button">Voltar</button><button class="btn" id="test" type="button">Testar som</button></div>
+  </div>
+</section>
+<section id="app" class="hidden">
+  <header><h1>R6 Squad</h1><button id="meBtn" class="av" aria-label="Editar perfil"></button></header>
+  <button class="call" id="call" type="button">Chamar para jogar</button>
+  <p class="sub" id="sub">Toque na tela uma vez para liberar o som</p>
+  <div class="seg" id="seg">
+    <button type="button" data-s="playing" style="--c:var(--g)" aria-pressed="false">Jogando agora</button>
+    <button type="button" data-s="off" style="--c:var(--m)" aria-pressed="false">Off hoje</button>
+    <button type="button" data-s="other" style="--c:var(--b)" aria-pressed="false">Em outro jogo</button>
+  </div>
+  <h2 class="hd">Squad</h2><div id="list"></div>
+</section>
+</main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getFirestore,doc,setDoc,onSnapshot,collection} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {firebaseConfig} from "./firebase-config.js";
+const $=s=>document.querySelector(s);
+const RK={cobre:["Cobre","#c4764a"],bronze:["Bronze","#a8743c"],prata:["Prata","#b8c2cc"],ouro:["Ouro","#f2c14e"],platina:["Platina","#5fd0d6"],esmeralda:["Esmeralda","#3ddc84"],diamante:["Diamante","#b58cff"],campeao:["Campeão","#ff6b6b"]};
+const ST={playing:{l:"Jogando agora",c:"var(--g)",o:0},other:{l:"Em outro jogo",c:"var(--b)",o:1},off:{l:"Off hoje",c:"var(--m)",o:2}};
+let db,me=null,players={},ctx,handled=null,firstCall=true,ready=false,newAvatar=null,editing=false,cooldown=false,callAt=null,curAudio=null,it,tt,unlocked=false;
+let myId;try{myId=localStorage.getItem("r6id");if(!myId){myId=crypto.randomUUID();localStorage.setItem("r6id",myId)}}catch(e){myId=myId||String(Math.random()).slice(2)}
+const show=id=>["gate","setup","app"].forEach(x=>$("#"+x).classList.toggle("hidden",x!==id));
+const safe=s=>typeof s==="string"&&s.startsWith("data:image/")?s:null;
+function avatar(el,p){el.textContent="";const s=p&&safe(p.avatar);if(s){const i=document.createElement("img");i.src=s;i.alt="";el.appendChild(i)}else el.textContent=((p&&p.nick)||"?").slice(0,1).toUpperCase()}
+const ago=t=>{const m=Math.floor((Date.now()-t)/60000);return m<1?"agora":m<60?m+" min":m<1440?Math.floor(m/60)+" h":Math.floor(m/1440)+" d"};
+const online=(id,p)=>id===myId||(p.seen&&Date.now()-p.seen<150000);
+const ord=e=>online(e[0],e[1])?(ST[e[1].status]||ST.off).o:3;
+function render(){
+  if(!me)return;
+  avatar($("#meBtn"),me);
+  document.querySelectorAll("#seg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.s===me.status)));
+  const list=$("#list");list.textContent="";
+  const arr=Object.entries(players).filter(([,p])=>p&&p.nick).sort((a,b)=>ord(a)-ord(b)||(b[1].at||0)-(a[1].at||0));
+  if(!arr.length){const e=document.createElement("div");e.className="empty";e.textContent="Ninguém por aqui ainda.";list.appendChild(e)}
+  arr.forEach(([id,p])=>{
+    const on=online(id,p),st=on?(ST[p.status]||ST.off):{l:"Offline",c:"var(--m)"};
+    const r=document.createElement("div");r.className="row"+(id===myId?" me":"");r.style.setProperty("--c",st.c);
+    const a=document.createElement("div");a.className="av";avatar(a,p);
+    const g=document.createElement("div");g.className="grow";
+    const n=document.createElement("div");n.className="n";n.textContent=p.nick+(id===myId?" (você)":"");
+    const s=document.createElement("div");s.className="s";
+    const d=document.createElement("span");d.className="dot";
+    const t=document.createElement("span");
+    t.textContent=!on?st.l+(p.seen?" · visto há "+ago(p.seen):""):st.l+(p.reply&&callAt&&p.reply.call===callAt?(p.reply.v==="yes"?" · aceitou":" · recusou"):"")+" · "+ago(p.at||Date.now());
+    s.append(d,t);
+    const nr=document.createElement("div");nr.className="nr";nr.appendChild(n);
+    if(p.rank&&RK[p.rank]){const k=document.createElement("span");k.className="rk";k.textContent=RK[p.rank][0];k.style.setProperty("--rc",RK[p.rank][1]);nr.appendChild(k)}
+    g.append(nr,s);r.append(a,g);
+    if(typeof p.tracker==="string"&&/^https:\/\/r6\.tracker\.network\//i.test(p.tracker)){const l=document.createElement("a");l.href=p.tracker;l.target="_blank";l.rel="noopener noreferrer";l.className="lk";l.textContent="Tracker";r.appendChild(l)}
+    list.appendChild(r);
+  });
+  const c=arr.filter(([id,p])=>online(id,p)&&p.status==="playing").length;
+  if(unlocked)$("#sub").textContent=c?c+" jogando agora":"Ninguém jogando agora";
+}
+function unlock(){unlocked=true;try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume()}catch(e){}render()}
+document.addEventListener("pointerdown",unlock,{once:true});
+function siren(){try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume();const t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain();o.type="sawtooth";o.connect(g);g.connect(ctx.destination);o.frequency.setValueAtTime(550,t);for(let i=0;i<4;i++){o.frequency.linearRampToValueAtTime(950,t+i+.5);o.frequency.linearRampToValueAtTime(550,t+i+1)}g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.22,t+.05);g.gain.setValueAtTime(.22,t+3.9);g.gain.linearRampToValueAtTime(0,t+4);o.start(t);o.stop(t+4.05)}catch(e){}}
+function stopAlarm(){if(curAudio){curAudio.pause();curAudio=null}}
+function alarm(){stopAlarm();curAudio=new Audio("alarme-r6.mp3");curAudio.play().catch(siren)}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.remove("hidden");clearTimeout(tt);tt=setTimeout(()=>t.classList.add("hidden"),7000)}
+const readURL=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
+async function resize(f){const bmp=await createImageBitmap(f),S=160,c=document.createElement("canvas");c.width=c.height=S;const k=Math.max(S/bmp.width,S/bmp.height),w=bmp.width*k,h=bmp.height*k;c.getContext("2d").drawImage(bmp,(S-w)/2,(S-h)/2,w,h);return c.toDataURL("image/jpeg",.82)}
+async function toAvatar(f){if(f.type==="image/gif"){if(f.size<500000)return readURL(f);toast("GIF grande demais (máx. 500 KB). Usei só o primeiro quadro.")}return resize(f)}
+function openSetup(edit){
+  editing=edit;newAvatar=null;
+  $("#setupTitle").textContent=edit?"Editar perfil":"Crie seu perfil";
+  $("#nick").value=edit&&me?me.nick:"";$("#trk").value=edit&&me&&me.tracker?me.tracker:"";$("#rk").value=edit&&me&&me.rank?me.rank:"";
+  avatar($("#prevAv"),edit?me:null);$("#cancel").classList.toggle("hidden",!edit);show("setup");
+}
+const put=(data,merge)=>setDoc(doc(db,"players",myId),data,merge?{merge:true}:undefined);
+$("#file").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{newAvatar=await toAvatar(f);avatar($("#prevAv"),{nick:$("#nick").value,avatar:newAvatar})}catch(err){toast("Não consegui usar essa imagem.")}};
+$("#save").onclick=async()=>{
+  const nick=$("#nick").value.trim().slice(0,16);if(!nick){toast("Digite seu nick do jogo.");return}
+  const trk=$("#trk").value.trim();
+  if(trk&&!/^https:\/\/r6\.tracker\.network\//i.test(trk)){toast("Use o link do seu perfil em r6.tracker.network");return}
+  const data={nick,avatar:newAvatar||(me&&me.avatar)||null,tracker:trk||null,rank:($("#rk").value in RK)?$("#rk").value:null,status:(me&&me.status)||"off",at:Date.now(),seen:Date.now()};
+  try{await put(data,true);me={...me,...data};players[myId]=me;show("app");render()}catch(err){toast("Não foi possível salvar.")}
+};
+$("#cancel").onclick=()=>show("app");$("#meBtn").onclick=()=>openSetup(true);$("#test").onclick=()=>{unlock();alarm()};
+document.querySelectorAll("#seg button").forEach(b=>b.onclick=async()=>{if(!me)return;me={...me,status:b.dataset.s,at:Date.now()};players[myId]=me;render();try{await put({status:me.status,at:me.at},true)}catch(e){toast("Não foi possível atualizar o status.")}});
+$("#call").onclick=async()=>{
+  if(cooldown||!me)return;unlock();cooldown=true;const btn=$("#call");btn.disabled=true;
+  let s=15;btn.textContent="Aguarde "+s+"s";
+  const iv=setInterval(()=>{s--;if(s<=0){clearInterval(iv);cooldown=false;btn.disabled=false;btn.textContent="Chamar para jogar"}else btn.textContent="Aguarde "+s+"s"},1000);
+  try{await setDoc(doc(db,"calls","latest"),{by:myId,nick:me.nick,at:Date.now()})}catch(e){toast("Não foi possível enviar o chamado.")}
+};
+function incoming(d){$("#incMsg").textContent=(d.nick||"Alguém")+" chamou para jogar";$("#incoming").classList.remove("hidden");clearTimeout(it);it=setTimeout(()=>{$("#incoming").classList.add("hidden");stopAlarm()},30000)}
+async function respond(v){
+  stopAlarm();clearTimeout(it);$("#incoming").classList.add("hidden");if(!me)return;
+  me={...me,reply:{call:callAt,v},at:Date.now()};if(v==="yes")me.status="playing";players[myId]=me;render();
+  try{await put({reply:me.reply,status:me.status,at:me.at},true)}catch(e){toast("Não foi possível enviar a resposta.")}
+}
+$("#accept").onclick=()=>respond("yes");$("#decline").onclick=()=>respond("no");
+async function beat(gone){if(!me)return;try{await put({seen:gone?0:Date.now()},true)}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")beat()});
+addEventListener("pagehide",()=>beat(true));
+setInterval(()=>beat(),30000);setInterval(render,15000);
+if(!firebaseConfig.apiKey||firebaseConfig.apiKey.startsWith("COLE")){show("gate")}
+else{
+  db=getFirestore(initializeApp(firebaseConfig));
+  onSnapshot(collection(db,"players"),s=>{
+    players={};s.forEach(d=>players[d.id]=d.data());
+    if(players[myId])me=players[myId];
+    if(!ready){ready=true;if(me){show("app");beat()}else openSetup(false)}
+    render();
+  },()=>toast("Erro ao conectar. Confira as regras do Firebase."));
+  onSnapshot(doc(db,"calls","latest"),s=>{
+    if(!s.exists())return;const d=s.data();
+    if(firstCall){firstCall=false;handled=d.at;return}
+    if(!d||d.at===handled)return;
+    handled=d.at;callAt=d.at;alarm();
+    if(d.by===myId){toast("Você chamou o squad");render();return}
+    incoming(d);render();try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
+  });
+}
+</script>
+</body>
+</html>
